@@ -16,19 +16,19 @@ fun getTitle(url: String): String {
         HttpClients.createDefault() use {
             it.execute(req) use { resp ->
                 val entity = resp.getEntity()
-                val charset = {
+                val charset = run {
                     val contentType = entity.getContentType().getValue() ?: ""
                     val pattern = Pattern.compile("charset=(.*)")
                     val matcher = pattern.matcher(contentType)
                     if (matcher.find()) matcher.group(1) else "UTF-8"
-                }()
-                val title = {
+                }
+                val title = run {
                     val body = entity.getContent().readBytes().toString(charset)
                     val pattern = Pattern.compile("""(?is)<title>(.*?)</title>""")
                     val matcher = pattern.matcher(body)
                     matcher.find()
                     matcher.group(1)
-                }()
+                }
                 return title.replaceAll("""\s+""", " ").trim()
             }
 
